@@ -18,7 +18,7 @@ namespace elasticsearch_nest_webapi_angularjs.Controllers
         [Route("search")]
         public IHttpActionResult Search(string q, int page = 1, int pageSize = 10)
         {
-            
+
             var results = service.Search(q, page, pageSize);
             return Ok(results);
         }
@@ -32,19 +32,19 @@ namespace elasticsearch_nest_webapi_angularjs.Controllers
             return Ok();
         }
 
-        //[HttpGet]
-        //[Route("autocomplete")]
-        //public IHttpActionResult Autocomplete(string q)
-        //{
-        //    return Ok(service.Autocomplete(q));
-        //}
+        [HttpGet]
+        [Route("autocomplete")]
+        public IHttpActionResult Autocomplete(string q)
+        {
+            return Ok(service.Autocomplete(q));
+        }
 
-        //[HttpGet]
-        //[Route("suggest")]
-        //public IHttpActionResult Suggest(string q)
-        //{
-        //    return Ok(service.Suggest(q));
-        //}
+        [HttpGet]
+        [Route("suggest")]
+        public IHttpActionResult Suggest(string q)
+        {
+            return Ok(service.Suggest(q));
+        }
 
         [HttpGet]
         [Route("morelikethis")]

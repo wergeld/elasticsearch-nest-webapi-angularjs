@@ -19,7 +19,7 @@ namespace elasticsearch_nest_webapi_angularjs.Services
         {
             var result = client.Search<Post>(x => x.Query(q => q
                                                         .MultiMatch(mp => mp
-                                                            .Query(query.ToLower())
+                                                            .Query(query)
                                                                 .Fields(f => f
                                                                     .Fields(f1 => f1.Title, f2 => f2.Body, f3 => f3.Tags))))
                                                     .Aggregations(a => a
@@ -28,7 +28,6 @@ namespace elasticsearch_nest_webapi_angularjs.Services
                                                             .Size(10)))
                                                     .From(page - 1)
                                                     .Size(pageSize));
-
 
             return new SearchResult<Post>
             {
@@ -45,7 +44,7 @@ namespace elasticsearch_nest_webapi_angularjs.Services
         {
 
             var filters = tags.Select(c => new Func<QueryContainerDescriptor<Post>, QueryContainer>(x => x.Term(f => f.Tags, c))).ToArray();
-            
+
             var result = client.Search<Post>(x => x
                 .Query(q => q
                     .Bool(b => b
@@ -76,25 +75,48 @@ namespace elasticsearch_nest_webapi_angularjs.Services
             };
         }
 
-        //public IEnumerable<string> Autocomplete(string query)
-        //{
-        //    var result = client.Suggest<Post>(x => x.Completion("tag-suggestions", c => c.Text(query)
-        //        .Field(f => f.Suggest)
-        //        .Size(6)));
+        public IEnumerable<string> Autocomplete(string query)
+        {
+            //var result = client.Suggest<Post>(x => x.Completion("tag-suggestions", c => c.Text(query)
+            //    .Field(f => f.Suggest)
+            //    .Size(6)));
+            //return result.Suggestions["tag-suggestions"].SelectMany(x => x.Options).Select(y => y.Text);
 
-        //    return result.Suggestions["tag-suggestions"].SelectMany(x => x.Options).Select(y => y.Text);
-        //}
+            var result = client.Search<Post>(sr => sr
+                .Suggest(scd => scd
+                    .Completion("tag-suggestions", cs => cs
+                        .Prefix(query)
+                        .Fuzzy(fsd => fsd
+                            .Fuzziness(Fuzziness.Auto))
+                        .Field(r => r.Suggest))));
 
-        //public IEnumerable<string> Suggest(string query)
-        //{
-        //    var result = client.Suggest<Post>(x => x.Term("post-suggestions", t => t.Text(query)
-        //        .Field(f => f.Body)
-        //        .Field(f => f.Title)
-        //        .Field(f => f.Tags)
-        //        .Size(6)));
+            return result.Suggest["tag-suggestions"].SelectMany(x => x.Options).Select(y => y.Text);
+        }
 
-        //    return result.Suggestions["post-suggestions"].SelectMany(x => x.Options).Select(y => y.Text);
-        //}
+        public IEnumerable<string> Suggest(string query)
+        {
+            //var result = client.Suggest<Post>(x => x.Term("post-suggestions", t => t.Text(query)
+            //    .Field(f => f.Body)
+            //    .Field(f => f.Title)
+            //    .Field(f => f.Tags)
+            //    .Size(6)));
+
+            //return result.Suggestions["post-suggestions"].SelectMany(x => x.Options).Select(y => y.Text);
+
+            var result = client.Search<Post>(sr => sr
+                .Suggest(scd => scd
+                    .Completion("post-suggestions", cs => cs
+                        .Prefix(query)
+                        .Fuzzy(fsd => fsd
+                            .Fuzziness(Fuzziness.Auto))
+                            .Field(f => f.Suggest)
+                            //.Field(f => f.Body)
+                            //.Field(f => f.Title)
+                            //.Field(f => f.Tags)
+                            .Size(6))));
+
+            return result.Suggest["post-suggestions"].SelectMany(x => x.Options).Select(y => y.Text);
+        }
 
         public SearchResult<Post> FindMoreLikeThis(string id, int pageSize)
         {
@@ -120,14 +142,14 @@ namespace elasticsearch_nest_webapi_angularjs.Services
             return result.Source;
         }
 
-        public IEnumerable<string> Autocomplete(string query)
-        {
-            throw new NotImplementedException();
-        }
+        //public IEnumerable<string> Autocomplete(string query)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public IEnumerable<string> Suggest(string query)
-        {
-            throw new NotImplementedException();
-        }
+        //public IEnumerable<string> Suggest(string query)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
