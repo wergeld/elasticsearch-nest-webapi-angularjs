@@ -21,13 +21,13 @@ namespace elasticsearch_nest_webapi_angularjs.Services
 
         public void CreateIndex(string fileName, int maxItems)
         {
-            if (!client.IndexExists(ElasticConfig.IndexName).Exists)
+            if (!client.Indices.Exists(ElasticConfig.IndexName).Exists)
             {
                 var indexDescriptor = new CreateIndexDescriptor(ElasticConfig.IndexName)
                     .Mappings(ms => ms
                         .Map<Post>(m => m.AutoMap()));
 
-                client.CreateIndex(ElasticConfig.IndexName, i=> indexDescriptor);
+                client.Indices.Create(ElasticConfig.IndexName, i=> indexDescriptor);
             }
 
             BulkIndex(HostingEnvironment.MapPath("~/data/" + fileName), maxItems);

@@ -32,19 +32,19 @@ namespace elasticsearch_nest_webapi_angularjs.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        [Route("autocomplete")]
-        public IHttpActionResult Autocomplete(string q)
-        {
-            return Ok(service.Autocomplete(q));
-        }
+        //[HttpGet]
+        //[Route("autocomplete")]
+        //public IHttpActionResult Autocomplete(string q)
+        //{
+        //    return Ok(service.Autocomplete(q));
+        //}
 
-        [HttpGet]
-        [Route("suggest")]
-        public IHttpActionResult Suggest(string q)
-        {
-            return Ok(service.Suggest(q));
-        }
+        //[HttpGet]
+        //[Route("suggest")]
+        //public IHttpActionResult Suggest(string q)
+        //{
+        //    return Ok(service.Suggest(q));
+        //}
 
         [HttpGet]
         [Route("morelikethis")]

@@ -19,7 +19,7 @@ namespace elasticsearch_nest_webapi_angularjs.Services
         {
             var result = client.Search<Post>(x => x.Query(q => q
                                                         .MultiMatch(mp => mp
-                                                            .Query(query)
+                                                            .Query(query.ToLower())
                                                                 .Fields(f => f
                                                                     .Fields(f1 => f1.Title, f2 => f2.Body, f3 => f3.Tags))))
                                                     .Aggregations(a => a
@@ -29,13 +29,14 @@ namespace elasticsearch_nest_webapi_angularjs.Services
                                                     .From(page - 1)
                                                     .Size(pageSize));
 
+
             return new SearchResult<Post>
             {
                 Total = (int)result.Total,
                 Page = page,
                 Results = result.Documents,
                 ElapsedMilliseconds = result.Took,
-                AggregationsByTags = result.Aggs.Terms("by_tags").Buckets.ToDictionary(x => x.Key, y => y.DocCount.GetValueOrDefault(0))
+                AggregationsByTags = result.Aggregations.Terms("by_tags").Buckets.ToDictionary(x => x.Key, y => y.DocCount.GetValueOrDefault(0))
             };
         }
 
@@ -71,29 +72,29 @@ namespace elasticsearch_nest_webapi_angularjs.Services
                 Page = page,
                 Results = result.Documents,
                 ElapsedMilliseconds = result.Took,
-                AggregationsByTags = result.Aggs.Terms("by_tags").Buckets.ToDictionary(x => x.Key, y => y.DocCount.GetValueOrDefault(0))
+                AggregationsByTags = result.Aggregations.Terms("by_tags").Buckets.ToDictionary(x => x.Key, y => y.DocCount.GetValueOrDefault(0))
             };
         }
 
-        public IEnumerable<string> Autocomplete(string query)
-        {
-            var result = client.Suggest<Post>(x => x.Completion("tag-suggestions", c => c.Text(query)
-                .Field(f => f.Suggest)
-                .Size(6)));
+        //public IEnumerable<string> Autocomplete(string query)
+        //{
+        //    var result = client.Suggest<Post>(x => x.Completion("tag-suggestions", c => c.Text(query)
+        //        .Field(f => f.Suggest)
+        //        .Size(6)));
 
-            return result.Suggestions["tag-suggestions"].SelectMany(x => x.Options).Select(y => y.Text);
-        }
+        //    return result.Suggestions["tag-suggestions"].SelectMany(x => x.Options).Select(y => y.Text);
+        //}
 
-        public IEnumerable<string> Suggest(string query)
-        {
-            var result = client.Suggest<Post>(x => x.Term("post-suggestions", t => t.Text(query)
-                .Field(f => f.Body)
-                .Field(f => f.Title)
-                .Field(f => f.Tags)
-                .Size(6)));
+        //public IEnumerable<string> Suggest(string query)
+        //{
+        //    var result = client.Suggest<Post>(x => x.Term("post-suggestions", t => t.Text(query)
+        //        .Field(f => f.Body)
+        //        .Field(f => f.Title)
+        //        .Field(f => f.Tags)
+        //        .Size(6)));
 
-            return result.Suggestions["post-suggestions"].SelectMany(x => x.Options).Select(y => y.Text);
-        }
+        //    return result.Suggestions["post-suggestions"].SelectMany(x => x.Options).Select(y => y.Text);
+        //}
 
         public SearchResult<Post> FindMoreLikeThis(string id, int pageSize)
         {
@@ -117,6 +118,16 @@ namespace elasticsearch_nest_webapi_angularjs.Services
         {
             var result = client.Get<Post>(new DocumentPath<Post>(id));
             return result.Source;
+        }
+
+        public IEnumerable<string> Autocomplete(string query)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> Suggest(string query)
+        {
+            throw new NotImplementedException();
         }
     }
 }
