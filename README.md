@@ -18,34 +18,54 @@ PUT /stackoverflow
   "mappings": {
     "properties": {
       "answerCount": {
-        "type": "long"
+        "type": "integer"
       },
       "body": {
-        "type": "keyword"
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword"
+            }
+          }
       },
       "creationDate": {
         "type": "date"
       },
       "id": {
-        "type": "text",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword"
+            }
           }
-        }
       },
       "score": {
-        "type": "long"
+        "type": "integer"
       },
       "suggest": {
-        "type": "keyword"
+        "type": "completion",
+        "analyzer": "simple",
+        "search_analyzer": "keyword",
+        "preserve_separators": true,
+        "preserve_position_increments": true,
+        "max_input_length": 50
       },
       "tags": {
-        "type": "keyword"
+          "type" : "text",
+          "fielddata": true,
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword"
+            }
+          }
       },
       "title": {
-        "type": "keyword"
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword"
+            }
+          }
       }
     }
   }
@@ -59,6 +79,4 @@ PUT /stackoverflow
 
 
 ##In Progress:
-Suggest and AutoComplete not functional in NEST 7.x - Need to create
-Searching only works in lower case (see qery.ToLower() in code). For example "innodb" finds results but "InnoDB" does not.
 Learning C# as I go. Many thanks to original repo: https://github.com/rseniuta/elasticsearch-nest-webapi-angularjs
